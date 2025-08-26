@@ -1,0 +1,32 @@
+﻿@model Souqna.Models.ApplicationUser
+
+@{
+    ViewData["Title"] = "حذف مستخدم";
+}
+
+<h2 class="text-danger">⚠️ تأكيد حذف المستخدم</h2>
+
+<div class="alert alert-warning">
+    هل أنت متأكد أنك تريد حذف هذا المستخدم؟ 🚨
+</div>
+
+<table class="table table-bordered">
+    <tr>
+        <th>الاسم</th>
+        <td>@Model.FullName</td>
+    </tr>
+    <tr>
+        <th>البريد الإلكتروني</th>
+        <td>@Model.Email</td>
+    </tr>
+    <tr>
+        <th>الدور</th>
+        <td>@Model.Role</td>
+    </tr>
+</table>
+
+<form asp-action="DeleteUser" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">🗑 حذف</button>
+    <a asp-action="Users" class="btn btn-secondary">⬅ إلغاء</a>
+</form>

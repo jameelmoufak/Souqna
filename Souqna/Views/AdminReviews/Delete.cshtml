@@ -1,0 +1,16 @@
+﻿@model Souqna.Models.Review
+
+<h2>🗑 تأكيد الحذف</h2>
+
+<div class="alert alert-danger">
+    <h4>هل أنت متأكد أنك تريد حذف هذا الرأي؟</h4>
+    <p><strong>الاسم:</strong> @Model.Name</p>
+    <p><strong>العنوان:</strong> @Model.Subject</p>
+    <p><strong>الوصف:</strong> @Model.Description</p>
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">🗑 نعم، احذف</button>
+    <a asp-action="Index" class="btn btn-secondary">⬅ إلغاء</a>
+</form>

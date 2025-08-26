@@ -1,0 +1,43 @@
+﻿@model IEnumerable<Souqna.Models.Review>
+
+<h2>إدارة الآراء 📝</h2>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>الاسم</th>
+            <th>العنوان</th>
+            <th>الوصف</th>
+            <th>الحالة</th>
+            <th>التحكم</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var review in Model)
+        {
+            <tr>
+                <td>@review.Name</td>
+                <td>@review.Subject</td>
+                <td>@review.Description</td>
+                <td>
+                    @if (review.IsApproved)
+                    {
+                        <span class="badge bg-success">مقبول ✅</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning">قيد المراجعة ⏳</span>
+                    }
+                </td>
+                <td>
+                    @if (!review.IsApproved)
+                    {
+                        <a asp-action="Approve"
+                           asp-route-id="@review.Id"
+                           class="btn btn-success btn-sm">✔ موافقة</a>
+                    }
+                    <a asp-action="Delete" asp-route-id="@review.Id" class="btn btn-danger btn-sm">🗑 حذف</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

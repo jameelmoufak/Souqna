@@ -1,0 +1,69 @@
+﻿@model Souqna.Data.ViewModels.ProductVM
+@using Souqna.Data.Enums
+
+@{
+    ViewData["Title"] = "تعديل المنتج";
+}
+
+<h2>تعديل المنتج</h2>
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="ProductId" />
+
+    <div class="form-group mb-3">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="Description"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="PriceOfUnit"></label>
+        <input asp-for="PriceOfUnit" class="form-control" type="number" step="0.01" />
+        <span asp-validation-for="PriceOfUnit" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="Category">التصنيف</label>
+        <select asp-for="Category" class="form-control" asp-items="ViewBag.Categories"></select>
+        <span asp-validation-for="Category" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="Unit">الوحدة</label>
+        <select asp-for="Unit" class="form-control" asp-items="ViewBag.Units"></select>
+        <span asp-validation-for="Unit" class="text-danger"></span>
+    </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="IsNew" class="form-check-input" />
+        <label asp-for="IsNew" class="form-check-label">جديد</label>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="StockQuantity">الكمية المتوفرة</label>
+        <input asp-for="StockQuantity" class="form-control" type="number" />
+        <span asp-validation-for="StockQuantity" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label>الصور الجديدة</label>
+        <input asp-for="UploadedImages" class="form-control" type="file" multiple />
+        <span asp-validation-for="UploadedImages" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">حفظ التغييرات</button>
+    <a asp-action="Index" class="btn btn-secondary">إلغاء</a>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

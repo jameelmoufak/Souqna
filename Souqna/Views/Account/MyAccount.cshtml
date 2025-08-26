@@ -1,0 +1,67 @@
+﻿@model Souqna.Models.ApplicationUser
+@Html.AntiForgeryToken()
+
+
+@{
+    ViewData["Title"] = "الملف الشخصي";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">الملف الشخصي</h2>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <form asp-action="MyAccount" method="post" enctype="multipart/form-data" class="row g-3">
+
+        <input type="hidden" asp-for="Id" />
+
+        <div class="col-md-4 text-center">
+            <img src="@(Model.ProfileImage ?? "/images/default-profile.png")"
+                 class="img-thumbnail rounded-circle mb-3"
+                 style="width:200px; height:200px; object-fit:cover;" />
+
+            <input type="file" name="profileImage" class="form-control" />
+        </div>
+
+        <div class="col-md-8">
+            <div class="mb-3">
+                <label asp-for="FullName" class="form-label">الاسم الكامل</label>
+                <input asp-for="FullName" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">البريد الإلكتروني</label>
+                <input asp-for="Email" class="form-control" readonly />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Birthday" class="form-label">تاريخ الميلاد</label>
+                <input asp-for="Birthday" class="form-control" type="date" />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Address" class="form-label">العنوان</label>
+                <input asp-for="Address" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <div class="mb-3">
+                    <label asp-for="Balance" class="form-label fw-bold text-primary">
+                        الرصيد
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-success fw-bold">💰</span>
+                        <input asp-for="Balance" class="form-control text-center fw-bold" readonly />
+                        <span class="input-group-text bg-light">ر.س</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <button type="submit" class="btn btn-primary">تحديث</button>
+        </div>
+    </form>
+</div>

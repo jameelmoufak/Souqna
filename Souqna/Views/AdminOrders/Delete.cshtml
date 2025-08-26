@@ -1,0 +1,11 @@
+﻿@model Souqna.Models.Order
+
+<h2>🗑 حذف الطلب</h2>
+
+<p>هل أنت متأكد أنك تريد حذف الطلب رقم <strong>@Model.OrderId</strong>؟</p>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="OrderId" />
+    <button type="submit" class="btn btn-danger">نعم، حذف</button>
+    <a asp-action="Index" class="btn btn-secondary">إلغاء</a>
+</form>

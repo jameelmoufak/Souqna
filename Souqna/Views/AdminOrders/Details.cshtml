@@ -1,0 +1,20 @@
+﻿@model Souqna.Models.Order
+
+<div class="container mt-4">
+    <h2>تفاصيل الطلب</h2>
+
+    <p><strong>رقم الطلب:</strong> @Model.OrderId</p>
+    <p><strong>المستخدم:</strong> @Model.User?.FullName (@Model.User?.Email)</p>
+    <p><strong>الإجمالي:</strong> @Model.TotalCost.ToString("C")</p>
+    <p><strong>التاريخ:</strong> @Model.OrderedAt.ToLocalTime().ToString("yyyy/MM/dd HH:mm")</p>
+
+    <h4>🛒 المنتجات:</h4>
+    <ul>
+        @foreach (var item in Model.OrderItems)
+        {
+            <li>@item.product?.Name × @item.Amount = @item.Cost.ToString("C")</li>
+        }
+    </ul>
+
+    <a asp-action="Index" class="btn btn-secondary">⬅ رجوع</a>
+</div>

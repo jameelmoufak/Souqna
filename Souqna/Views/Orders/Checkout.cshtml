@@ -1,0 +1,183 @@
+﻿@model Souqna.Data.ViewModels.CheckoutVM
+
+<div class="container mt-5" >
+    <div class="row justify-content-center">
+        <div class="col-lg-8" style="margin-top: 20px;">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h2 class="mb-0">إتمام عملية الشراء</h2>
+                </div>
+
+                <div class="card-body p-4">
+                    <form asp-action="Checkout" asp-controller="Orders" method="post">
+                        <input type="hidden" asp-for="ProductId" />
+                       
+                        <!-- بيانات المشتري -->
+                        <h4 class="mb-3 text-secondary">🧑‍💻 بيانات المشتري</h4>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">الاسم الكامل</label>
+                                <input asp-for="FullName" class="form-control" placeholder="ادخل اسمك الكامل" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">البريد الإلكتروني</label>
+                                <input asp-for="Email" type="email" class="form-control" placeholder="example@mail.com" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">رقم الهاتف</label>
+                                <input asp-for="PhoneNumber" type="tel" class="form-control" placeholder="+963 9xx xxx xxx" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">العنوان</label>
+                                <input asp-for="Address" class="form-control" placeholder="المدينة - الشارع - البناء" required />
+                            </div>
+                        </div>
+
+                        <!-- تفاصيل الطلب -->
+                        <h4 class="mb-3 text-secondary">🛒 تفاصيل الطلب</h4>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">الكمية</label>
+                                <input asp-for="Quantity" id="quantityInput" class="form-control" type="number" min="1" value="@Model.Quantity" />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">المجموع (تقديري)</label>
+                                <input type="text" id="totalInput" class="form-control bg-light" value="@Model.EstimatedTotal?.ToString("C")" readonly />
+                            </div>
+                        </div>
+
+                        <!-- طريقة الدفع -->
+                        <div class="mb-3">
+                            <label class="form-label">طريقة الدفع</label>
+                            <select asp-for="PaymentMethod" class="form-control" id="paymentMethod">
+                                <option value="Balance">الرصيد</option>
+                                <option value="ShamCash">شام كاش</option>
+                                <option value="PayPal">PayPal</option>
+                            </select>
+                        </div>
+
+                        <!-- 👇 يظهر فقط عند اختيار PayPal -->
+                        <!-- 👇 مكان زر PayPal (مخفي بالبداية) -->
+                        <div id="paypalSection" class="d-none">
+                            <div id="paypal-button-container"></div>
+                        </div>
+
+                        <!-- 👇 يظهر فقط عند اختيار شام كاش -->
+                        <div id="shamCashSection" class="d-none">
+                            <label>رقم الموبايل (شام كاش)</label>
+                            <input type="text" class="form-control" name="shamCashPhone" />
+                        </div>
+
+                        <!-- زر التأكيد -->
+                        <button type="submit" class="btn btn-success btn-lg w-100 shadow-sm">
+                            ✅ تأكيد الشراء
+                        </button>
+                        @if (TempData["Error"] != null)
+                        {
+                            <div class="alert alert-danger">@TempData["Error"]</div>
+                        }
+
+                        @if (TempData["Success"] != null)
+                        {
+                            <div class="alert alert-success">@TempData["Success"]</div>
+                        }
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&currency=USD"></script>
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let quantityInput = document.getElementById("quantityInput");
+        let totalInput = document.getElementById("totalInput");
+        let unitPrice = @Model.EstimatedTotal / @Model.Quantity; // 👈 نحسب سعر الوحدة من الموديل
+
+        quantityInput.addEventListener("input", function () {
+            let qty = parseInt(quantityInput.value) || 1;
+            let total = qty * unitPrice;
+            totalInput.value = total.toLocaleString("ar-EG", { style: "currency", currency: "SYP" });
+            // غيّر العملة حسب المطلوب (مثلاً USD)
+        });
+    });
+</script>
+
+
+<script>
+    document.getElementById("paymentMethod").addEventListener("change", function () {
+        document.getElementById("paypalSection").classList.add("d-none");
+        document.getElementById("shamCashSection").classList.add("d-none");
+
+        if (this.value === "PayPal") {
+            document.getElementById("paypalSection").classList.remove("d-none");
+        } else if (this.value === "ShamCash") {
+            document.getElementById("shamCashSection").classList.remove("d-none");
+        }
+    });
+</script>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let paymentMethod = document.getElementById("paymentMethod");
+        let form = document.querySelector("form");
+
+        paymentMethod.addEventListener("change", function () {
+            if (this.value === "PayPal") {
+                document.getElementById("paypalSection").classList.remove("d-none");
+                form.querySelector("button[type=submit]").classList.add("d-none");
+            } else {
+                document.getElementById("paypalSection").classList.add("d-none");
+                form.querySelector("button[type=submit]").classList.remove("d-none");
+            }
+        });
+
+        // PayPal Button
+        paypal.Buttons({
+        createOrder: function (data, actions) {
+            let qty = document.getElementById("quantityInput").value || 1;
+            let unitPrice = @Model.EstimatedTotal / @Model.Quantity;
+            let total = qty * unitPrice;
+
+            return actions.order.create({
+                purchase_units: [{
+                    amount: { value: total.toFixed(2) } // 👈 القيمة بالدولار (USD)
+                }]
+            });
+        },
+        onApprove: function (data, actions) {
+            return actions.order.capture().then(function (details) {
+                // ✅ هنا المستخدم دفع عبر واجهة PayPal بنجاح
+                // نرسل الطلب للسيرفر
+                fetch('@Url.Action("ConfirmPayPal", "Orders")', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector("input[name=__RequestVerificationToken]").value
+                    },
+                    body: JSON.stringify({
+                        orderId: data.orderID, // من PayPal
+                        productId: '@Model.ProductId',
+                        quantity: document.getElementById("quantityInput").value
+                    })
+                })
+                .then(res => res.json())
+                .then(res => {
+                    if (res.success) {
+                        window.location.href = '/Orders/OrderCompleted';
+                    } else {
+                        alert("❌ خطأ في الدفع: " + res.message);
+                    }
+                });
+            });
+        }
+    }).render('#paypal-button-container'); // 👈 هذا المكان اللي يترسم فيه زر PayPal
+
+    });
+</script>

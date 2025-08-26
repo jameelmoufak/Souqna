@@ -1,0 +1,96 @@
+﻿@model Souqna.Data.ViewModels.MyAccountVM
+
+<div class="container my-5" >
+
+    <h2 class="mb-4">المنتجات في السلة</h2>
+    @if (Model.CartItems != null && Model.CartItems.Any())
+    {
+        <ul class="list-group mb-5">
+            @foreach (var item in Model.CartItems)
+            {
+                var image = item.Product.GetImages().FirstOrDefault() ?? "/images/no-image.png";
+                <li class="list-group-item d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-3">
+                        <img src="@image" alt="@item.Product.Name" width="50" class="rounded" />
+                        <span>@item.Product.Name</span>
+                    </div>
+                    <span class="badge bg-primary">الكمية: @item.Amount</span>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p class="text-muted">السلة فارغة.</p>
+    }
+
+    <hr />
+
+    <h2 class="mb-4">المنتجات التي قمت بشرائها</h2>
+    <div class="row g-4">
+        @if (Model.PurchasedProducts.Any())
+        {
+            @foreach (var item in Model.PurchasedProducts)
+            {
+                var product = item.product;
+                var image = product.GetImages().FirstOrDefault() ?? "/images/no-image.png";
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="card h-100">
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@product.ProductId">
+                            <img src="@image" class="card-img-top" alt="@product.Name" />
+                        </a>
+                        <div class="card-body">
+                            <h5 class="card-title">@product.Name</h5>
+                            <p class="card-text text-success">@product.PriceOfUnit.ToString("C")</p>
+                            <p class="card-text">الكمية: @item.Amount</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-muted">ليس لديك منتجات تم شراؤها.</p>
+        }
+    </div>
+
+
+    <hr />
+
+    <h2 class="mb-4">منتجاتك المعروضة للبيع</h2>
+    <div class="row g-4">
+        @if (Model.SoldProducts.Any())
+        {
+            @foreach (var product in Model.SoldProducts)
+            {
+                var image = product.GetImages().FirstOrDefault() ?? "/images/no-image.png";
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="card h-100">
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@product.ProductId">
+                            <img src="@image" class="card-img-top" alt="@product.Name" />
+                        </a>
+                        <div class="card-body">
+                            <h5 class="card-title">@product.Name</h5>
+                            <p class="card-text text-success">@product.PriceOfUnit.ToString("C")</p>
+                            <p class="card-text">الكمية: @product.StockQuantity</p>
+
+                            <div class="d-flex gap-2">
+                                <a asp-controller="Product" asp-action="Details" asp-route-id="@product.ProductId" class="btn btn-outline-primary btn-sm">عرض التفاصيل</a>
+                                <a asp-controller="Product" asp-action="Edit" asp-route-id="@product.ProductId" class="btn btn-warning btn-sm">تعديل</a>
+                                <form asp-area="User" asp-controller="Product" asp-action="Delete" asp-route-id="@product.ProductId" method="post" onsubmit="return confirm('هل أنت متأكد أنك تريد حذف هذا المنتج؟');" style="display:inline;">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-danger btn-sm">حذف</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-muted">ليس لديك منتجات معروضة للبيع.</p>
+        }
+    </div>
+</div>
+

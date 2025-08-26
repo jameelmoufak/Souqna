@@ -1,0 +1,42 @@
+﻿@model IEnumerable<Souqna.Models.Product>
+
+<div class="row gy-4 isotope-container" data-aos="fade-up" data-aos-delay="200">
+    @foreach (var product in Model)
+    {
+        // إنشاء كلاس الفلترة بناءً على الفئة
+        var filterClass = "filter-" + product.Category.ToString().Replace(" ", "").ToLower();
+
+        // اختيار الصور: لو عندك GetImages() استعمله، وإلا استخدم ProductImages
+        var images = product.GetImages() ?? new List<string>();
+        var firstImage = images.FirstOrDefault() ?? "/images/no-image.png";
+
+        <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item isotope-item @filterClass">
+            <div class="product-card shadow-sm rounded bg-white h-100 d-flex flex-column">
+                <a href="@Url.Action("Details", "Product", new { id = product.ProductId })" class="image-link">
+                    <img src="@firstImage" alt="@product.Name" class="product-image rounded-top" />
+                </a>
+                <div class="product-info p-3 d-flex flex-column flex-grow-1">
+                    <h5 class="product-title mb-1">
+                        <a href="@Url.Action("Details", "Product", new { id = product.ProductId })"
+                           class="text-dark text-decoration-none">
+                            @product.Name
+                        </a>
+                    </h5>
+                    <p class="product-description text-muted small mb-2" style="height: 40px; overflow: hidden;">
+                        @product.Description
+                    </p>
+                    <p class="product-description text-muted small mb-2">
+                        الكمية المتاحة: @product.StockQuantity
+                    </p>
+                    <div class="mt-auto d-flex justify-content-between align-items-center">
+                        <span class="text-success fw-bold">@product.PriceOfUnit.ToString("C")</span>
+                        <a href="@Url.Action("Details", "Product", new { id = product.ProductId })"
+                           class="btn btn-sm btn-outline-primary">
+                            التفاصيل
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

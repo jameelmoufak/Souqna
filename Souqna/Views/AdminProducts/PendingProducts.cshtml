@@ -1,0 +1,41 @@
+﻿@model IEnumerable<Souqna.Models.Product>
+
+@{
+    ViewData["Title"] = "المنتجات المعلقة";
+}
+
+<h2>📦 المنتجات المعلقة بانتظار المراجعة</h2>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">🚀 لا توجد منتجات معلقة حالياً</p>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>الاسم</th>
+                <th>الوصف</th>
+                <th>المستخدم</th>
+                <th>التاريخ</th>
+                <th>التحكم</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in Model)
+            {
+                <tr>
+                    <td>@product.Name</td>
+                    <td>@product.Description</td>
+                    <td>@product.User?.FullName (@product.User?.Email)</td>
+                    <td>@product.CreatedAt.ToString("yyyy/MM/dd")</td>
+                    <td>
+                        <a asp-action="Approve" asp-route-id="@product.ProductId" class="btn btn-success btn-sm">✔ موافقة</a>
+                        <a asp-action="Reject" asp-route-id="@product.ProductId" class="btn btn-danger btn-sm">❌ رفض</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

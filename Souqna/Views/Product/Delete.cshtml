@@ -1,0 +1,22 @@
+﻿@model Souqna.Models.Product
+
+@{
+    ViewData["Title"] = "حذف المنتج";
+}
+
+<h2>حذف المنتج</h2>
+
+<h4>هل أنت متأكد أنك تريد حذف هذا المنتج؟</h4>
+
+<div>
+    <h5>@Model.Name</h5>
+    <p>@Model.Description</p>
+    <p>السعر: @Model.PriceOfUnit.ToString("C")</p>
+</div>
+
+<form asp-action="Delete" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="ProductId" />
+    <button type="submit" class="btn btn-danger">حذف</button>
+    <a asp-action="Index" class="btn btn-secondary">إلغاء</a>
+</form>

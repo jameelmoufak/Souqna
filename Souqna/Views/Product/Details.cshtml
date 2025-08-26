@@ -1,0 +1,165 @@
+﻿@model Souqna.Models.Product
+
+@{
+    ViewData["Title"] = "تفاصيل المنتج";
+    var images = Model.GetImages();
+}
+
+<div class="container py-5">
+    <div class="row g-4">
+        <!-- عرض صور المنتج -->
+        <div class="col-lg-6">
+            <div class="swiper mySwiper shadow-sm rounded bg-white p-3">
+                <div class="swiper-wrapper">
+                    @if (images != null && images.Any())
+                    {
+                        foreach (var img in images)
+                        {
+                            <div class="swiper-slide">
+                                <img src="@img" alt="@Model.Name" class="img-fluid rounded" loading="lazy" />
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="swiper-slide">
+                            <img src="/images/no-image.png" alt="لا توجد صور" class="img-fluid rounded" />
+                        </div>
+                    }
+                </div>
+                <div class="swiper-pagination"></div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+        </div>
+
+        <!-- عرض تفاصيل المنتج -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 rounded h-100">
+                <div class="card-body d-flex flex-column h-100">
+
+                    <!-- العنوان والسعر -->
+                    <div class="mb-3">
+                        <h2 class="card-title fw-bold mb-1">@Model.Name</h2>
+                        <p class="text-muted">التصنيف: @Model.Category</p>
+                        <span class="fw-bold fs-4 text-success">@Model.PriceOfUnit.ToString("C")</span>
+                    </div>
+
+                    <!-- تفاصيل إضافية -->
+                    <ul class="list-unstyled mb-4 flex-grow-1">
+                        <li><strong>الكمية المتاحة:</strong> @Model.StockQuantity</li>
+                        <li><strong>الوصف:</strong> @Model.Description</li>
+                        <li><strong>البائع:</strong> @Model.User?.FullName</li>
+                        <li><strong>تاريخ الإضافة:</strong> @Model.CreatedAt.ToString("yyyy/MM/dd")</li>
+                    </ul>
+
+                    <!-- ✅ التقييم دائمًا في الأسفل -->
+                    <div class="p-3 rounded shadow-sm mb-3" style="background:#e9f9ee;">
+                        <div class="rating-box w-100">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="me-2 text-warning fs-4">⭐</span>
+                                <span class="fw-bold">التقييمات</span>
+                            </div>
+
+                            <p class="mb-2 text-muted">
+                                معدل التقييم:
+                                <strong class="text-warning">@ViewBag.AverageRating.ToString("0.0")</strong> / 5
+                            </p>
+
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <form asp-action="Rate" asp-controller="Product" method="post" class="d-flex gap-2">
+                                    <input type="hidden" name="productId" value="@Model.ProductId" />
+                                    <div class="star-rating">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            <button type="submit" name="stars" value="@i"
+                                                    class="star-btn @(ViewBag.UserRating >= i ? "active" : "")">
+                                                ★
+                                            </button>
+                                        }
+                                    </div>
+                                </form>
+                            }
+                            else
+                            {
+                                <p>
+                                    <a asp-area="Identity" asp-page="/Account/Login" class="text-primary fw-bold">
+                                        سجل دخول
+                                    </a> لتتمكن من التقييم
+                                </p>
+                            }
+                        </div>
+
+                        <!-- CSS -->
+                      
+                    </div>
+
+                    <!-- زر الشراء -->
+                    <a asp-controller="Orders" asp-action="Checkout"
+                       asp-route-productId="@Model.ProductId"
+                       class="btn btn-primary btn-lg w-100">
+                        شراء الآن
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+  
+    <!-- المنتجات المشابهة -->
+    <!-- المنتجات المشابهة -->
+    <div class="row mt-5">
+        <div class="col-12 mb-4">
+            <h3 class="fw-bold">منتجات مشابهة</h3>
+        </div>
+
+        @if (ViewBag.SimilarProducts != null && ((List<Souqna.Models.Product>)ViewBag.SimilarProducts).Any())
+        {
+            @foreach (var product in (List<Souqna.Models.Product>)ViewBag.SimilarProducts)
+            {
+                var simImage = product.GetImages().FirstOrDefault() ?? "/images/no-image.png";
+
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                    <div class="product-card">
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@product.ProductId">
+                            <img src="@simImage" alt="@product.Name" class="card-img-top" />
+                        </a>
+                        <div class="card-body">
+                            <h5 class="card-title">@product.Name</h5>
+                            <p class="card-text text-success">@product.PriceOfUnit.ToString("C")</p>
+                            <a asp-controller="Product" asp-action="Details" asp-route-id="@product.ProductId" class="btn btn-outline-primary btn-sm">
+                                عرض التفاصيل
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <p class="text-muted">لا توجد منتجات مشابهة حالياً.</p>
+            </div>
+        }
+    </div>
+
+
+<!-- سكربت مكتبة Swiper -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        new Swiper(".mySwiper", {
+            loop: true,
+            pagination: { el: ".swiper-pagination", clickable: true },
+            navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+            lazy: { loadOnTransitionStart: true, loadPrevNext: true },
+            slidesPerView: 1,
+            spaceBetween: 12,
+            centeredSlides: true
+        });
+    });
+</script>

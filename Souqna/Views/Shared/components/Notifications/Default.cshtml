@@ -1,0 +1,18 @@
+﻿@model List<Souqna.Models.Notification>
+
+<ul class="list-unstyled" id="notificationsList">
+    @foreach (var n in Model)
+    {
+        <li class="mb-2">
+            <a href="@Url.Action("OpenNotification", "Notifications", new { id = n.Id })"
+               class="alert alert-info p-2 d-block @(n.IsRead ? "" : "fw-bold")">
+                @n.Message
+                <small class="text-muted">(@n.CreatedAt.ToLocalTime())</small>
+            </a>
+        </li>
+    }
+    @if (!Model.Any())
+    {
+        <li class="text-muted">لا يوجد إشعارات بعد</li>
+    }
+</ul>

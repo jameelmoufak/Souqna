@@ -1,0 +1,47 @@
+﻿@model List<Souqna.Models.Order>
+
+@{
+    ViewData["Title"] = "إدارة الطلبات";
+}
+
+<h2 class="mb-4">📦 إدارة الطلبات</h2>
+
+<table class="table table-bordered table-striped align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>المستخدم</th>
+            <th>الإجمالي</th>
+            <th>التاريخ</th>
+            <th>المنتجات</th>
+            <th>التحكم</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>
+                    @order.User?.FullName <br />
+                    <small class="text-muted">@order.User?.Email</small>
+                </td>
+                <td>@order.TotalCost.ToString("C")</td>
+                <td>@order.OrderedAt.ToString("yyyy/MM/dd HH:mm")</td>
+                <td>
+                    <ul class="mb-0">
+                        @foreach (var item in order.OrderItems)
+                        {
+                            <li>
+                                <b>@item.product?.Name</b> × @item.Amount
+                                <span class="text-muted">( @item.Cost.ToString("C") )</span>
+                            </li>
+                        }
+                    </ul>
+                </td>
+                <td>
+                    <a asp-controller="AdminOrders" asp-action="Details" asp-route-id="@order.OrderId" class="btn btn-info btn-sm">👁️ عرض</a>
+                    <a asp-controller="AdminOrders" asp-action="Delete" asp-route-id="@order.OrderId" class="btn btn-danger btn-sm">🗑 حذف</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
